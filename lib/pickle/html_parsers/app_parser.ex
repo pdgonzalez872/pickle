@@ -69,83 +69,42 @@ defmodule Pickle.APPParser do
      }}
   end
 
-  defp do_tournament_match(input) do
-    {"tr", _,
-     [
-       {_, _,
-        [
-          {_, _, [{_, _, [dates]}]}
-        ]},
-       {_, _,
-        [
-          {_, _,
-           [
-             {_, _,
-              [
-                {_, _, [{_, _, [name]}, _, address_state]}
-              ]}
-           ]}
-        ]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
-        [
-          {"div", [{"class", "td-content-wrapper"}],
-           [
-             {"div", [{"class", "td-content"}],
-              [
-                {"a",
-                 [{"href", "https://www.pickleballtournaments.com/tournamentinfo.pl?tid=5968"}],
-                 [
-                   {"img",
-                    [
-                      {"loading", "lazy"},
-                      {"class", "register-icon"},
-                      {"src", "app_schedule_files/Register_ticket-icon.png"},
-                      {"alt", "register icon"},
-                      {"width", "45"},
-                      {"height", "35"}
-                    ], []},
-                   "   "
-                 ]}
-              ]}
-           ]}
-        ]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
-        [
-          {"div", [{"class", "td-content-wrapper"}],
-           [
-             {"div", [{"class", "td-content"}],
-              [
-                {"a",
-                 [
-                   {"href", "https://www.youtube.com/channel/UCzp8-zq6Qpd3g1ykc8Tj9BA"},
-                   {"target", "_blank"},
-                   {"rel", "noopener"}
-                 ], ["APPTV YouTube"]},
-                {"br", [], []},
-                {"a",
-                 [
-                   {"href", "https://www.facebook.com/theapptour/"},
-                   {"target", "_blank"},
-                   {"rel", "noopener"}
-                 ], ["Facebook Livestream"]}
-              ]}
-           ]}
-        ]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
-        [
-          {"div", [{"class", "td-content-wrapper"}],
-           [{"div", [{"class", "td-content"}], [{"p", [{"class", "p1"}], ["Lee Whitwell"]}]}]}
-        ]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
-        [
-          {"div", [{"class", "td-content-wrapper"}],
-           [{"div", [{"class", "td-content"}], ["$50K"]}]}
-        ]}
-     ]} = input
+  defp do_tournament_match(
+         {"tr", _,
+          [
+            {_, _,
+             [
+               {_, _, [{_, _, [dates]}]}
+             ]},
+            {_, _,
+             [
+               {_, _,
+                [
+                  {_, _,
+                   [
+                     {_, _, [{_, _, [name]}, _, address_state]}
+                   ]}
+                ]}
+             ]},
+            _,
+            _,
+            _,
+            {_, _,
+             [
+               {_, _, [{_, _, [prize_money]}]}
+             ]}
+          ]}
+       ) do
+    {:ok,
+     %{
+       name: name,
+       dates: dates,
+       address_state: address_state,
+       prize_money: prize_money
+     }}
+  end
 
-    raise "all good!"
-    require IEx
-    IEx.pry()
+  defp do_tournament_match(input) do
     {:error, "Not able to match #{inspect(input)}"}
   end
 
@@ -166,6 +125,12 @@ defmodule Pickle.APPParser do
         |> then(fn e -> {:ok, e} end)
 
       [country, "International"] ->
+        tournament_state
+        |> Map.put(:city, "International")
+        |> Map.put(:state, country)
+        |> then(fn e -> {:ok, e} end)
+
+      [country, "International", _] ->
         tournament_state
         |> Map.put(:city, "International")
         |> Map.put(:state, country)
