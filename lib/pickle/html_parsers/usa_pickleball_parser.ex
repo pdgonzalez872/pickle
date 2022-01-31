@@ -187,6 +187,6 @@ defmodule Pickle.UsaPickleballParser do
 
     month = Map.get(months, month_name)
     {day, _} = Integer.parse(day)
-    Date.new!(2022, month, day)
+    DateTime.new!(Date.new!(2022, month, day), Time.utc_now())
   end
 end
