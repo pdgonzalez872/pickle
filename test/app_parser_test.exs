@@ -8,7 +8,7 @@ defmodule Pickle.APPParserTest do
         |> Path.join()
         |> Pickle.APPParser.call()
 
-      assert Enum.count(state.tournaments) == 117
+      assert Enum.count(state.tournaments) == 34
 
       assert %{
                address: "77333 Country Club Dr",

@@ -15,13 +15,6 @@ defmodule Pickle.UsaPickleballParser do
       |> Enum.map(fn e -> parse_tournament(e) end)
     end)
     |> then(fn e -> Map.put(state, :tournaments, e) end)
-    |> then(fn state ->
-      Map.put(
-        state,
-        :prize_money_tournaments,
-        Enum.reject(state.tournaments, fn t -> t.prize_money == "$0" end)
-      )
-    end)
   end
 
   defp init(full_file_path) do
@@ -29,6 +22,7 @@ defmodule Pickle.UsaPickleballParser do
   end
 
   def parse_tournament(e) do
+    # TODO: refactor to use ok/error tuples again
     with tournament_state <- get_name(e, %{}),
          tournament_state <- get_url(e, tournament_state),
          tournament_state <- get_start_date(e, tournament_state),

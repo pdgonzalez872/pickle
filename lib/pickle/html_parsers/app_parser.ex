@@ -16,16 +16,9 @@ defmodule Pickle.APPParser do
         [{_, _, [_, {_, _, web}]}, _mobile] = i
         web
       end)
-      |> Enum.map(fn e -> parse_tournament(e) end)
+      |> Enum.map(fn e -> {:ok, _} = parse_tournament(e) end)
     end)
     |> then(fn e -> Map.put(state, :tournaments, e) end)
-    |> then(fn state ->
-      Map.put(
-        state,
-        :prize_money_tournaments,
-        Enum.reject(state.tournaments, fn t -> t.prize_money == "$0" end)
-      )
-    end)
   end
 
   defp init(full_file_path) do
@@ -33,6 +26,50 @@ defmodule Pickle.APPParser do
   end
 
   def parse_tournament(e) do
+    with {:ok, tournament_state} <- do_tournament_match(e),
+         {:ok, tournament_state} <- get_city_and_state(tournament_state),
+         tournament_state <- Map.put(tournament_state, :organizer, "APP") do
+      {:ok, tournament_state}
+    else
+      error ->
+        Logger.error("Error: #{inspect(error)}")
+        error
+    end
+  end
+
+  defp do_tournament_match(
+         {"tr", _,
+          [
+            {_, _,
+             [
+               {_, _, [{_, _, [dates]}]}
+             ]},
+            {_, _,
+             [
+               {_, _,
+                [
+                  {_, _, [{_, _, [name]}, _, address_state]}
+                ]}
+             ]},
+            _,
+            _,
+            _,
+            {_, _,
+             [
+               {_, _, [{_, _, [prize_money]}]}
+             ]}
+          ]}
+       ) do
+    {:ok,
+     %{
+       name: name,
+       dates: dates,
+       address_state: address_state,
+       prize_money: prize_money
+     }}
+  end
+
+  defp do_tournament_match(input) do
     {"tr", _,
      [
        {_, _,
@@ -43,46 +80,106 @@ defmodule Pickle.APPParser do
         [
           {_, _,
            [
-             {_, _, [{_, _, [name]}, _, address_state]}
+             {_, _,
+              [
+                {_, _, [{_, _, [name]}, _, address_state]}
+              ]}
            ]}
         ]},
-       _,
-       _,
-       _,
-       {_, _,
+       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
         [
-          {_, _, [{_, _, [prize_money]}]}
+          {"div", [{"class", "td-content-wrapper"}],
+           [
+             {"div", [{"class", "td-content"}],
+              [
+                {"a",
+                 [{"href", "https://www.pickleballtournaments.com/tournamentinfo.pl?tid=5968"}],
+                 [
+                   {"img",
+                    [
+                      {"loading", "lazy"},
+                      {"class", "register-icon"},
+                      {"src", "app_schedule_files/Register_ticket-icon.png"},
+                      {"alt", "register icon"},
+                      {"width", "45"},
+                      {"height", "35"}
+                    ], []},
+                   "   "
+                 ]}
+              ]}
+           ]}
+        ]},
+       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
+        [
+          {"div", [{"class", "td-content-wrapper"}],
+           [
+             {"div", [{"class", "td-content"}],
+              [
+                {"a",
+                 [
+                   {"href", "https://www.youtube.com/channel/UCzp8-zq6Qpd3g1ykc8Tj9BA"},
+                   {"target", "_blank"},
+                   {"rel", "noopener"}
+                 ], ["APPTV YouTube"]},
+                {"br", [], []},
+                {"a",
+                 [
+                   {"href", "https://www.facebook.com/theapptour/"},
+                   {"target", "_blank"},
+                   {"rel", "noopener"}
+                 ], ["Facebook Livestream"]}
+              ]}
+           ]}
+        ]},
+       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
+        [
+          {"div", [{"class", "td-content-wrapper"}],
+           [{"div", [{"class", "td-content"}], [{"p", [{"class", "p1"}], ["Lee Whitwell"]}]}]}
+        ]},
+       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
+        [
+          {"div", [{"class", "td-content-wrapper"}],
+           [{"div", [{"class", "td-content"}], ["$50K"]}]}
         ]}
-     ]} = e
+     ]} = input
 
-    tournament_state = %{
-      name: name,
-      dates: dates,
-      address_state: address_state,
-      prize_money: prize_money
-    }
-
+    raise "all good!"
     require IEx
     IEx.pry()
+    {:error, "Not able to match #{inspect(input)}"}
+  end
 
-    # with tournament_state <- get_name(e, %{}),
-    #      tournament_state <- get_url(e, tournament_state),
-    #      tournament_state <- get_start_date(e, tournament_state),
-    #      tournament_state <- get_end_date(e, tournament_state),
-    #      tournament_state <- adjust_dates(tournament_state),
-    #      tournament_state <- get_address(e, tournament_state),
-    #      tournament_state <- get_city(e, tournament_state),
-    #      tournament_state <- get_state(e, tournament_state),
-    #      tournament_state <- get_zip(e, tournament_state),
-    #      tournament_state <- get_map_link(e, tournament_state),
-    #      tournament_state <- get_prize_money(e, tournament_state),
-    #      tournament_state <- Map.put(tournament_state, :organizer, "app") do
-    #   tournament_state
-    # else
-    #   error ->
-    #     Logger.error("Error: #{inspect(error)}")
-    #     error
-    # end
+  defp get_city_and_state(%{address_state: address_state} = tournament_state) do
+    address_state
+    |> String.replace("|", ",")
+    |> String.split(",", trim: true)
+    |> Enum.map(fn e ->
+      e
+      |> String.trim_leading()
+      |> String.trim_trailing()
+    end)
+    |> case do
+      [_, city, state, _] ->
+        tournament_state
+        |> Map.put(:city, city)
+        |> Map.put(:state, state)
+        |> then(fn e -> {:ok, e} end)
+
+      [country, "International"] ->
+        tournament_state
+        |> Map.put(:city, "International")
+        |> Map.put(:state, country)
+        |> then(fn e -> {:ok, e} end)
+
+      [state, _] ->
+        tournament_state
+        |> Map.put(:city, "Unknown")
+        |> Map.put(:state, state)
+        |> then(fn e -> {:ok, e} end)
+
+      error ->
+        {:error, "Could not get city and state from #{inspect(error)}"}
+    end
   end
 
   defp get_name(floki_event, tournament_state) do
