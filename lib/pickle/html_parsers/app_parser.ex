@@ -33,38 +33,37 @@ defmodule Pickle.APPParser do
   end
 
   def parse_tournament(e) do
-    {"tr", [],
+    {"tr", _,
      [
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
+       {_, _,
         [
-          {"div", [{"class", "td-content-wrapper"}],
-           [{"div", [{"class", "td-content"}], [dates]}]}
+          {_, _, [{_, _, [dates]}]}
         ]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
+       {_, _,
         [
-          {"div", [{"class", "td-content-wrapper"}],
+          {_, _,
            [
-             {"div", [{"class", "td-content"}],
-              [{"strong", [], [name]}, {"br", [], []}, address_state]}
+             {_, _, [{_, _, [name]}, _, address_state]}
            ]}
         ]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
-        [{"div", [{"class", "td-content-wrapper"}], [{"div", [{"class", "td-content"}], []}]}]},
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
-        [
-         _
-        ]},
        _,
-       {"td", [{"colspan", ""}, {"rowspan", ""}, {"class", ""}, {"id", ""}],
+       _,
+       _,
+       {_, _,
         [
-          {"div", [{"class", "td-content-wrapper"}],
-           [{"div", [{"class", "td-content"}], [prize_money]}]}
+          {_, _, [{_, _, [prize_money]}]}
         ]}
      ]} = e
 
-     tournament_state = %{name: name, dates: dates, address_state: address_state, prize_money: prize_money}
+    tournament_state = %{
+      name: name,
+      dates: dates,
+      address_state: address_state,
+      prize_money: prize_money
+    }
 
-     require IEx; IEx.pry
+    require IEx
+    IEx.pry()
 
     # with tournament_state <- get_name(e, %{}),
     #      tournament_state <- get_url(e, tournament_state),
