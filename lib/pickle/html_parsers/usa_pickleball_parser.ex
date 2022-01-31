@@ -40,7 +40,7 @@ defmodule Pickle.UsaPickleballParser do
          tournament_state <- get_zip(e, tournament_state),
          tournament_state <- get_map_link(e, tournament_state),
          tournament_state <- get_prize_money(e, tournament_state),
-         tournament_state <- Map.put(tournament_state, :organizer, :usa_pickleball) do
+         tournament_state <- Map.put(tournament_state, :organizer, "usa_pickleball") do
       tournament_state
     else
       error ->

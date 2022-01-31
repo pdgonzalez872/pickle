@@ -22,7 +22,7 @@ defmodule PickleTest do
                zip: "92211",
                map_link:
                  "https://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=77333+Country+Club+Dr+Palm+Desert+CA+92211+United+States",
-               organizer: :usa_pickleball
+               organizer: "usa_pickleball"
              } = Enum.at(state.tournaments, -1)
 
       assert start_date.year == 2022
