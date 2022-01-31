@@ -13,12 +13,12 @@ defmodule Pickle.EventsFixtures do
       |> Enum.into(%{
         address: "some address",
         city: "some city",
-        end_date: ~N[2022-01-30 04:05:00],
+        end_date: ~N[2022-01-30 04:21:00],
         map_link: "some map_link",
         name: "some name",
         organizer: "some organizer",
         prize_money: 42,
-        start_date: ~N[2022-01-30 04:05:00],
+        start_date: ~N[2022-01-30 04:21:00],
         state: "some state",
         url: "some url",
         zip: "some zip"

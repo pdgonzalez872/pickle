@@ -1,12 +1,12 @@
-defmodule PickleTest do
+defmodule Pickle.APPParserTest do
   use ExUnit.Case
 
   describe "Scrapes the tournaments correctly" do
     test "works" do
       state =
-        [File.cwd!(), "scrappable_html", "usa_pickleball_schedule.html"]
+        [File.cwd!(), "scrappable_html", "app_schedule.html"]
         |> Path.join()
-        |> Pickle.UsaPickleballParser.call()
+        |> Pickle.APPParser.call()
 
       assert Enum.count(state.tournaments) == 117
 

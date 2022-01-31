@@ -8,7 +8,19 @@ defmodule Pickle.EventsTest do
 
     import Pickle.EventsFixtures
 
-    @invalid_attrs %{address: nil, city: nil, end_date: nil, map_link: nil, name: nil, organizer: nil, prize_money: nil, start_date: nil, state: nil, url: nil, zip: nil}
+    @invalid_attrs %{
+      address: nil,
+      city: nil,
+      end_date: nil,
+      map_link: nil,
+      name: nil,
+      organizer: nil,
+      prize_money: nil,
+      start_date: nil,
+      state: nil,
+      url: nil,
+      zip: nil
+    }
 
     test "list_tournaments/0 returns all tournaments" do
       tournaments = tournaments_fixture()
@@ -21,17 +33,29 @@ defmodule Pickle.EventsTest do
     end
 
     test "create_tournaments/1 with valid data creates a tournaments" do
-      valid_attrs = %{address: "some address", city: "some city", end_date: ~N[2022-01-30 04:05:00], map_link: "some map_link", name: "some name", organizer: "some organizer", prize_money: 42, start_date: ~N[2022-01-30 04:05:00], state: "some state", url: "some url", zip: "some zip"}
+      valid_attrs = %{
+        address: "some address",
+        city: "some city",
+        end_date: ~N[2022-01-30 04:21:00],
+        map_link: "some map_link",
+        name: "some name",
+        organizer: "some organizer",
+        prize_money: 42,
+        start_date: ~N[2022-01-30 04:21:00],
+        state: "some state",
+        url: "some url",
+        zip: "some zip"
+      }
 
       assert {:ok, %Tournaments{} = tournaments} = Events.create_tournaments(valid_attrs)
       assert tournaments.address == "some address"
       assert tournaments.city == "some city"
-      assert tournaments.end_date == ~N[2022-01-30 04:05:00]
+      assert tournaments.end_date == ~N[2022-01-30 04:21:00]
       assert tournaments.map_link == "some map_link"
       assert tournaments.name == "some name"
       assert tournaments.organizer == "some organizer"
       assert tournaments.prize_money == 42
-      assert tournaments.start_date == ~N[2022-01-30 04:05:00]
+      assert tournaments.start_date == ~N[2022-01-30 04:21:00]
       assert tournaments.state == "some state"
       assert tournaments.url == "some url"
       assert tournaments.zip == "some zip"
@@ -43,17 +67,32 @@ defmodule Pickle.EventsTest do
 
     test "update_tournaments/2 with valid data updates the tournaments" do
       tournaments = tournaments_fixture()
-      update_attrs = %{address: "some updated address", city: "some updated city", end_date: ~N[2022-01-31 04:05:00], map_link: "some updated map_link", name: "some updated name", organizer: "some updated organizer", prize_money: 43, start_date: ~N[2022-01-31 04:05:00], state: "some updated state", url: "some updated url", zip: "some updated zip"}
 
-      assert {:ok, %Tournaments{} = tournaments} = Events.update_tournaments(tournaments, update_attrs)
+      update_attrs = %{
+        address: "some updated address",
+        city: "some updated city",
+        end_date: ~N[2022-01-31 04:21:00],
+        map_link: "some updated map_link",
+        name: "some updated name",
+        organizer: "some updated organizer",
+        prize_money: 43,
+        start_date: ~N[2022-01-31 04:21:00],
+        state: "some updated state",
+        url: "some updated url",
+        zip: "some updated zip"
+      }
+
+      assert {:ok, %Tournaments{} = tournaments} =
+               Events.update_tournaments(tournaments, update_attrs)
+
       assert tournaments.address == "some updated address"
       assert tournaments.city == "some updated city"
-      assert tournaments.end_date == ~N[2022-01-31 04:05:00]
+      assert tournaments.end_date == ~N[2022-01-31 04:21:00]
       assert tournaments.map_link == "some updated map_link"
       assert tournaments.name == "some updated name"
       assert tournaments.organizer == "some updated organizer"
       assert tournaments.prize_money == 43
-      assert tournaments.start_date == ~N[2022-01-31 04:05:00]
+      assert tournaments.start_date == ~N[2022-01-31 04:21:00]
       assert tournaments.state == "some updated state"
       assert tournaments.url == "some updated url"
       assert tournaments.zip == "some updated zip"

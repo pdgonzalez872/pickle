@@ -2,7 +2,8 @@ defmodule Pickle.Repo.Migrations.CreateTournaments do
   use Ecto.Migration
 
   def change do
-    create table(:tournaments) do
+    create table(:tournaments, primary_key: false) do
+      add :id, :binary_id, primary_key: true
       add :address, :string
       add :city, :string
       add :end_date, :naive_datetime
