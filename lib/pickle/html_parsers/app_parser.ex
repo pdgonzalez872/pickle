@@ -16,7 +16,15 @@ defmodule Pickle.APPParser do
         [{_, _, [_, {_, _, web}]}, _mobile] = i
         web
       end)
-      |> Enum.map(fn e -> {:ok, _} = parse_tournament(e) end)
+      |> Enum.map(fn e ->
+        e
+        |> parse_tournament()
+        |> case do
+          {:ok, tournament} -> tournament
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(fn e -> is_nil(e) end)
     end)
     |> then(fn e -> Map.put(state, :tournaments, e) end)
   end
@@ -28,6 +36,7 @@ defmodule Pickle.APPParser do
   def parse_tournament(e) do
     with {:ok, tournament_state} <- do_tournament_match(e),
          {:ok, tournament_state} <- get_city_and_state(tournament_state),
+         tournament_state <- Map.delete(tournament_state, :address_state),
          tournament_state <- Map.put(tournament_state, :organizer, "APP") do
       {:ok, tournament_state}
     else

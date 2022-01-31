@@ -10,19 +10,20 @@ defmodule Pickle.APPParserTest do
 
       assert Enum.count(state.tournaments) == 34
 
+      %{name: "", organizer: "APP", prize_money: "$75K", state: "FL", dates: "JAN 2023"}
       assert %{
                address: "77333 Country Club Dr",
-               city: "Palm Desert",
+               city: "Unknown",
                end_date: end_date,
-               name: "NP Palm Desert Open",
-               prize_money: 0,
+               name: "APP Masters",
+               prize_money: 75,
                start_date: start_date,
-               state: "CA",
+               state: "FL",
                url: "https://usapickleball.org/event/np-palm-desert-open/",
                zip: "92211",
                map_link:
                  "https://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=77333+Country+Club+Dr+Palm+Desert+CA+92211+United+States",
-               organizer: "usa_pickleball"
+               organizer: "APP"
              } = Enum.at(state.tournaments, -1)
 
       assert start_date.year == 2022
