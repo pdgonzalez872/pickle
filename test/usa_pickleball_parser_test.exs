@@ -4,7 +4,7 @@ defmodule PickleTest do
   describe "Scrapes the tournaments correctly" do
     test "works" do
       state =
-        [File.cwd!(), "test", "scrappable_html", "pickleball_tournaments_2022.html"]
+        [File.cwd!(), "scrappable_html", "pickleball_tournaments_2022.html"]
         |> Path.join()
         |> Pickle.UsaPickleballParser.call()
 
@@ -15,7 +15,7 @@ defmodule PickleTest do
                city: "Palm Desert",
                end_date: end_date,
                name: "NP Palm Desert Open",
-               prize_money: "$0",
+               prize_money: 0,
                start_date: start_date,
                state: "CA",
                url: "https://usapickleball.org/event/np-palm-desert-open/",

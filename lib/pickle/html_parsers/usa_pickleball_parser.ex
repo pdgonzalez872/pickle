@@ -136,9 +136,13 @@ defmodule Pickle.UsaPickleballParser do
       |> String.split(" ", trim: true)
       |> Enum.filter(fn e -> String.contains?(e, "$") end)
       |> case do
-        [match] -> match
-        _ -> "$0"
+        [match] -> match |> String.replace("$", "") |> String.replace("K", "")
+        _ -> "0"
       end
+      |> then(fn to_parse ->
+        {i, _} = Integer.parse(to_parse)
+        i
+      end)
 
     Map.put(tournament_state, :prize_money, prize_money)
   end
