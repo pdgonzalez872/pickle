@@ -136,8 +136,10 @@ defmodule Pickle.UsaPickleballParser do
         _ -> "0"
       end
       |> then(fn to_parse ->
-        {i, _} = Integer.parse(to_parse)
-        i
+        case Integer.parse(to_parse) do
+          {i, _} -> i
+          _error -> 0
+        end
       end)
 
     Map.put(tournament, :prize_money, prize_money)

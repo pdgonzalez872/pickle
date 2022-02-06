@@ -9,14 +9,3 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-#
-state =
-  [File.cwd!(), "scrappable_html", "usa_pickleball_schedule.html"]
-  |> Path.join()
-  |> Pickle.UsaPickleballParser.call()
-
-# state.tournaments
-# |> Enum.each(fn tournament ->
-#   nil
-#   # Pickle.Events.create_tournaments(tournament) |> IO.inspect()
-# end)
