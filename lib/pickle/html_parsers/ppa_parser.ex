@@ -50,26 +50,34 @@ defmodule Pickle.PPAParser do
 
   defp get_name(floki_event, tournament) do
     matching_fun = fn
-      [{_, [_, _, {_, _address_city_state}, _, _, {_, _url}, _], [_, {_, [_, _], [match]}, _, _, _]}] -> match
-      [{_, _, [match]}] -> match
-      _ -> nil
+      [
+        {_, [_, _, {_, _address_city_state}, _, _, {_, _url}, _],
+         [_, {_, [_, _], [match]}, _, _, _]}
+      ] ->
+        match
+
+      [{_, _, [match]}] ->
+        match
+
+      _ ->
+        nil
     end
 
     case do_get(floki_event, ".evo_info", matching_fun, tournament, :name) do
       {:ok, %{name: nil} = tournament} ->
-
         matching_fun = fn
           [{_, _, [match]}] -> match
-           _ -> nil
+          _ -> nil
         end
 
         do_get(floki_event, ".evcal_event_title", matching_fun, tournament, :name)
-      success -> success
+
+      success ->
+        success
     end
   end
 
-  defp get_url({_, [_,_,_,_,_,_,_,{_, url},_], _}, tournament) do
-
+  defp get_url({_, [_, _, _, _, _, _, _, {_, url}, _], _}, tournament) do
     {:ok, Map.put(tournament, :url, url)}
   end
 
@@ -79,8 +87,14 @@ defmodule Pickle.PPAParser do
     # end
 
     matching_fun = fn
-      [{_, [_, _, {_, _address_city_state}, _, _, {_, match}, _], [_, {_, [_, _], [_name]}, _, _, _]}] -> match
-      _ -> nil
+      [
+        {_, [_, _, {_, _address_city_state}, _, _, {_, match}, _],
+         [_, {_, [_, _], [_name]}, _, _, _]}
+      ] ->
+        match
+
+      _ ->
+        nil
     end
 
     do_get(floki_event, ".evo_info", matching_fun, tournament, :url)
@@ -88,9 +102,20 @@ defmodule Pickle.PPAParser do
 
   defp get_start_date(floki_event, tournament) do
     matching_fun = fn
-      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [start_day]}, _, _]}, {_, _, [{_, _, [_end_day]}, _]}, _]}] -> "#{year} #{month} #{start_day}"
-      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [start_day]}, _, _]}, {_, _, [{_, _, [_end_day]}]},_]}] -> "#{year} #{month} #{start_day}"
-      _ -> nil
+      [
+        {_, [_, _, {_, month}, {_, year}],
+         [{_, _, [{_, _, [start_day]}, _, _]}, {_, _, [{_, _, [_end_day]}, _]}, _]}
+      ] ->
+        "#{year} #{month} #{start_day}"
+
+      [
+        {_, [_, _, {_, month}, {_, year}],
+         [{_, _, [{_, _, [start_day]}, _, _]}, {_, _, [{_, _, [_end_day]}]}, _]}
+      ] ->
+        "#{year} #{month} #{start_day}"
+
+      _ ->
+        nil
     end
 
     do_get(floki_event, ".evcal_cblock", matching_fun, tournament, :start_date)
@@ -98,9 +123,20 @@ defmodule Pickle.PPAParser do
 
   defp get_end_date(floki_event, tournament) do
     matching_fun = fn
-      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [_start_day]}, _, _]}, {_, _, [{_, _, [end_day]}, _]}, _]}] -> "#{year} #{month} #{end_day}"
-      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [_start_day]}, _, _]}, {_, _, [{_, _, [end_day]}]},_]}] -> "#{year} #{month} #{end_day}"
-      _ -> nil
+      [
+        {_, [_, _, {_, month}, {_, year}],
+         [{_, _, [{_, _, [_start_day]}, _, _]}, {_, _, [{_, _, [end_day]}, _]}, _]}
+      ] ->
+        "#{year} #{month} #{end_day}"
+
+      [
+        {_, [_, _, {_, month}, {_, year}],
+         [{_, _, [{_, _, [_start_day]}, _, _]}, {_, _, [{_, _, [end_day]}]}, _]}
+      ] ->
+        "#{year} #{month} #{end_day}"
+
+      _ ->
+        nil
     end
 
     do_get(floki_event, ".evcal_cblock", matching_fun, tournament, :end_date)
@@ -128,7 +164,9 @@ defmodule Pickle.PPAParser do
         |> handle_address_split(tournament)
 
       error ->
-        Logger.info("Unable to get_address_city_and_state for #{inspect(tournament)}, error: #{error}")
+        Logger.info(
+          "Unable to get_address_city_and_state for #{inspect(tournament)}, error: #{error}"
+        )
     end
   end
 
@@ -202,8 +240,7 @@ defmodule Pickle.PPAParser do
     with [year, month_name, day] <- String.split(improper_date, " ", trim: true),
          {year, _} <- Integer.parse(year),
          month <- Map.get(months, String.capitalize(month_name)),
-         {day, _} <- Integer.parse(day)
-    do
+         {day, _} <- Integer.parse(day) do
       DateTime.new!(Date.new!(year, month, day), Time.utc_now())
     else
       _error -> nil
