@@ -10,29 +10,39 @@ defmodule Pickle.APPParserTest do
 
       assert Enum.count(state.tournaments) == 34
 
-      %{name: "", organizer: "APP", prize_money: "$75K", state: "FL", dates: "JAN 2023"}
       assert %{
-               address: "77333 Country Club Dr",
-               city: "Unknown",
+               city: "Mesa",
+               dates: "JAN 13 - 16, 2022",
                end_date: end_date,
-               name: "APP Masters",
+               name: "Mesa Open",
+               organizer: "app",
                prize_money: 75,
                start_date: start_date,
-               state: "FL",
-               url: "https://usapickleball.org/event/np-palm-desert-open/",
-               zip: "92211",
-               map_link:
-                 "https://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=77333+Country+Club+Dr+Palm+Desert+CA+92211+United+States",
-               organizer: "APP"
-             } = Enum.at(state.tournaments, -1)
+               state: "AZ"
+             } = Enum.at(state.tournaments, 0)
 
       assert start_date.year == 2022
-      assert start_date.month == 12
-      assert start_date.day == 2
+      assert start_date.month == 1
+      assert start_date.day == 13
 
       assert end_date.year == 2022
-      assert end_date.month == 12
-      assert end_date.day == 4
+      assert end_date.month == 1
+      assert end_date.day == 16
+
+      assert %{
+               city: "Unknown",
+               dates: "JAN 2023",
+               name: "APP Masters",
+               organizer: "app",
+               prize_money: 75,
+               state: "FL",
+               end_date: nil,
+               start_date: start_date
+             } = Enum.at(state.tournaments, -1)
+
+      assert start_date.year == 2023
+      assert start_date.month == 1
+      assert start_date.day == 1
     end
   end
 end

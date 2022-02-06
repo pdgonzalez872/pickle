@@ -4,7 +4,7 @@ defmodule Pickle.UsaPickleballParser do
   require Logger
 
   def call(full_file_path) do
-    state = init(full_file_path)
+    state = %{}
 
     full_file_path
     |> File.read!()
@@ -15,10 +15,6 @@ defmodule Pickle.UsaPickleballParser do
       |> Enum.map(fn e -> parse_tournament(e) end)
     end)
     |> then(fn e -> Map.put(state, :tournaments, e) end)
-  end
-
-  defp init(full_file_path) do
-    %{full_file_path: full_file_path}
   end
 
   def parse_tournament(e) do
