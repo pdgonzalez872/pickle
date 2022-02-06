@@ -20,34 +20,29 @@ defmodule Pickle.Events.Tournaments do
     timestamps()
   end
 
+  @required [
+    :city,
+    :name,
+    :prize_money,
+    :start_date,
+    :state,
+    :organizer
+  ]
+
+  @optional [
+    :address,
+    :end_date,
+    :url,
+    :zip,
+    :map_link
+  ]
+
+  @all @required ++ @optional
+
   @doc false
   def changeset(tournaments, attrs) do
     tournaments
-    |> cast(attrs, [
-      :address,
-      :city,
-      :end_date,
-      :name,
-      :prize_money,
-      :start_date,
-      :state,
-      :url,
-      :zip,
-      :map_link,
-      :organizer
-    ])
-    |> validate_required([
-      :address,
-      :city,
-      :end_date,
-      :name,
-      :prize_money,
-      :start_date,
-      :state,
-      :url,
-      :zip,
-      :map_link,
-      :organizer
-    ])
+    |> cast(attrs, @all)
+    |> validate_required(@required)
   end
 end

@@ -160,24 +160,6 @@ defmodule Pickle.APPParser do
     end
   end
 
-  defp get_name(floki_event, tournament) do
-    matching_fun = fn
-      [{_, [_, {_, _url}, {_, match}, _], _}] -> match
-      _ -> nil
-    end
-
-    do_get(floki_event, ".tribe-event-url", matching_fun, tournament, :name)
-  end
-
-  defp get_url(floki_event, tournament) do
-    matching_fun = fn
-      [{_, [_, {_, match}, {_, _name}, _], _}] -> match
-      _ -> nil
-    end
-
-    do_get(floki_event, ".tribe-event-url", matching_fun, tournament, :url)
-  end
-
   defp get_dates(
          _floki_event,
          %{
@@ -236,39 +218,26 @@ defmodule Pickle.APPParser do
   end
 
   defp get_prize_money(_floki_event, %{prize_money: raw_prize_money} = tournament) do
-    prize_money =
-      raw_prize_money
-      |> String.replace("$", "")
-      |> String.replace("K", "")
-      |> then(fn
-        "TBA" ->
-          0
+    raw_prize_money
+    |> String.replace("$", "")
+    |> String.replace("K", "")
+    |> then(fn
+      "TBA" ->
+        0
 
-        to_parse ->
-          case Integer.parse(to_parse) do
-            {i, _} -> i
-            error -> "Unable to parse #{to_parse}"
-          end
-      end)
-      |> then(fn
-        prize_money when is_integer(prize_money) ->
-          {:ok, Map.put(tournament, :prize_money, prize_money)}
+      to_parse ->
+        case Integer.parse(to_parse) do
+          {i, _} -> i
+          error -> "Unable to parse #{to_parse}, error: #{inspect(error)}"
+        end
+    end)
+    |> then(fn
+      prize_money when is_integer(prize_money) ->
+        {:ok, Map.put(tournament, :prize_money, prize_money)}
 
-        error ->
-          {:error, "Unable to parse prize_money, error: #{error}"}
-      end)
-  end
-
-  defp do_get(floki_event, class, matching_fun, state, key_to_update) do
-    if key_to_update == :start_date do
-      require IEx
-      IEx.pry()
-    end
-
-    floki_event
-    |> Floki.find(class)
-    |> matching_fun.()
-    |> then(fn e -> Map.put(state, key_to_update, e) end)
+      error ->
+        {:error, "Unable to parse prize_money, error: #{error}"}
+    end)
   end
 
   defp adjust_date([year_int, month_abbr, day_int], months) do
