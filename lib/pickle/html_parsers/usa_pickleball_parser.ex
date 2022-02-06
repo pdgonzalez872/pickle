@@ -9,8 +9,6 @@ defmodule Pickle.UsaPickleballParser do
   Takes in html and parses it accordingly
   """
   def call(html) do
-    state = %{}
-
     html
     |> Floki.parse_document!()
     |> then(fn document ->
@@ -18,7 +16,6 @@ defmodule Pickle.UsaPickleballParser do
       |> Floki.find(".type-tribe_events")
       |> Enum.map(fn e -> parse_tournament(e) end)
     end)
-    |> then(fn e -> Map.put(state, :tournaments, e) end)
   end
 
   def parse_tournament(e) do
@@ -147,7 +144,7 @@ defmodule Pickle.UsaPickleballParser do
     |> case do
       nil ->
         # Missing data seems to be common in those websites
-        Logger.warn("Missing data -> Setting #{key_to_update} to nil for #{inspect(state)}")
+        Logger.info("Missing data -> Setting #{key_to_update} to nil for #{inspect(state)}")
         {:ok, Map.put(state, key_to_update, nil)}
 
       value_to_update ->

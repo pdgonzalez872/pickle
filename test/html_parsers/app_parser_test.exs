@@ -3,13 +3,13 @@ defmodule Pickle.APPParserTest do
 
   describe "Scrapes the tournaments correctly - APP" do
     test "works" do
-      state =
+      tournaments =
         [File.cwd!(), "scrappable_html", "app_schedule.html"]
         |> Path.join()
         |> File.read!()
         |> Pickle.APPParser.call()
 
-      assert Enum.count(state.tournaments) == 34
+      assert Enum.count(tournaments) == 34
 
       assert %{
                city: "Mesa",
@@ -20,7 +20,7 @@ defmodule Pickle.APPParserTest do
                prize_money: 75,
                start_date: start_date,
                state: "AZ"
-             } = Enum.at(state.tournaments, 0)
+             } = Enum.at(tournaments, 0)
 
       assert start_date.year == 2022
       assert start_date.month == 1
@@ -39,7 +39,7 @@ defmodule Pickle.APPParserTest do
                state: "FL",
                end_date: nil,
                start_date: start_date
-             } = Enum.at(state.tournaments, -1)
+             } = Enum.at(tournaments, -1)
 
       assert start_date.year == 2023
       assert start_date.month == 1

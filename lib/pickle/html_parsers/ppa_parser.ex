@@ -1,5 +1,12 @@
 defmodule Pickle.PPAParser do
-  @moduledoc false
+  @moduledoc """
+  This type of tournament is interesting: There seems to be different payouts
+  for each tournament type. Unfortunately, I don't seem to be able to derive
+  which tournament type an event is. For now, will set the prize money as their
+  smallest prize money amount: $120K. Prize money ranges from 120 - 160.
+
+  More info: https://www.ppatour.com/tour-payouts/
+  """
 
   require Logger
 
@@ -7,17 +14,11 @@ defmodule Pickle.PPAParser do
   Takes in html and parses it accordingly
   """
   def call(html) do
-    state = %{}
-
     html
     |> Floki.parse_document!()
     |> then(fn document ->
       document
-      |> Floki.find(".eael-data-table")
-      |> then(fn i ->
-        [{_, _, [_, {_, _, web}]}, _mobile] = i
-        web
-      end)
+      |> Floki.find(".evcal_list_a")
       |> Enum.map(fn e ->
         e
         |> parse_tournament()
@@ -28,16 +29,17 @@ defmodule Pickle.PPAParser do
       end)
       |> Enum.reject(fn e -> is_nil(e) end)
     end)
-    |> then(fn e -> Map.put(state, :tournaments, e) end)
   end
 
   def parse_tournament(e) do
-    with {:ok, tournament} <- do_tournament_match(e),
-         {:ok, tournament} <- get_city_and_state(e, tournament),
-         {:ok, tournament} <- get_dates(e, tournament),
-         {:ok, tournament} <- get_prize_money(e, tournament),
-         tournament <- Map.delete(tournament, :address_state),
-         tournament <- Map.put(tournament, :organizer, "app") do
+    with {:ok, tournament} <- get_name(e, %{}),
+         {:ok, tournament} <- get_url(e, tournament),
+         {:ok, tournament} <- get_start_date(e, tournament),
+         {:ok, tournament} <- get_end_date(e, tournament),
+         tournament <- adjust_dates(tournament),
+         {:ok, tournament} <- get_address_city_and_state(e, tournament),
+         tournament <- get_prize_money(e, tournament),
+         tournament <- Map.put(tournament, :organizer, "ppa") do
       {:ok, tournament}
     else
       error ->
@@ -46,211 +48,165 @@ defmodule Pickle.PPAParser do
     end
   end
 
-  def debug(tournament) do
-    require IEx
-    IEx.pry()
-    tournament
-  end
+  defp get_name(floki_event, tournament) do
+    matching_fun = fn
+      [{_, [_, _, {_, _address_city_state}, _, _, {_, _url}, _], [_, {_, [_, _], [match]}, _, _, _]}] -> match
+      [{_, _, [match]}] -> match
+      _ -> nil
+    end
 
-  defp do_tournament_match(
-         {"tr", _,
-          [
-            {_, _,
-             [
-               {_, _, [{_, _, [dates]}]}
-             ]},
-            {_, _,
-             [
-               {_, _,
-                [
-                  {_, _, [{_, _, [name]}, _, address_state]}
-                ]}
-             ]},
-            _,
-            _,
-            _,
-            {_, _,
-             [
-               {_, _, [{_, _, [prize_money]}]}
-             ]}
-          ]}
-       ) do
-    {:ok,
-     %{
-       name: name,
-       dates: dates,
-       address_state: address_state,
-       prize_money: prize_money
-     }}
-  end
+    case do_get(floki_event, ".evo_info", matching_fun, tournament, :name) do
+      {:ok, %{name: nil} = tournament} ->
 
-  defp do_tournament_match(
-         {"tr", _,
-          [
-            {_, _,
-             [
-               {_, _, [{_, _, [dates]}]}
-             ]},
-            {_, _,
-             [
-               {_, _,
-                [
-                  {_, _,
-                   [
-                     {_, _, [{_, _, [name]}, _, address_state]}
-                   ]}
-                ]}
-             ]},
-            _,
-            _,
-            _,
-            {_, _,
-             [
-               {_, _, [{_, _, [prize_money]}]}
-             ]}
-          ]}
-       ) do
-    {:ok,
-     %{
-       name: name,
-       dates: dates,
-       address_state: address_state,
-       prize_money: prize_money
-     }}
-  end
+        matching_fun = fn
+          [{_, _, [match]}] -> match
+           _ -> nil
+        end
 
-  defp do_tournament_match(input) do
-    {:error, "Not able to match #{inspect(input)}"}
-  end
-
-  defp get_city_and_state(_, %{address_state: address_state} = tournament) do
-    address_state
-    |> String.replace("|", ",")
-    |> String.split(",", trim: true)
-    |> Enum.map(fn e ->
-      e
-      |> String.trim_leading()
-      |> String.trim_trailing()
-    end)
-    |> case do
-      [_, city, state, _] ->
-        tournament
-        |> Map.put(:city, city)
-        |> Map.put(:state, state)
-        |> then(fn e -> {:ok, e} end)
-
-      [country, "International"] ->
-        tournament
-        |> Map.put(:city, "International")
-        |> Map.put(:state, country)
-        |> then(fn e -> {:ok, e} end)
-
-      [country, "International", _] ->
-        tournament
-        |> Map.put(:city, "International")
-        |> Map.put(:state, country)
-        |> then(fn e -> {:ok, e} end)
-
-      [state, _] ->
-        tournament
-        |> Map.put(:city, "Unknown")
-        |> Map.put(:state, state)
-        |> then(fn e -> {:ok, e} end)
-
-      error ->
-        {:error, "Could not get city and state from #{inspect(error)}"}
+        do_get(floki_event, ".evcal_event_title", matching_fun, tournament, :name)
+      success -> success
     end
   end
 
-  defp get_dates(
-         _floki_event,
-         %{
-           dates: dates
-         } = tournament
-       ) do
+  defp get_url({_, [_,_,_,_,_,_,_,{_, url},_], _}, tournament) do
+
+    {:ok, Map.put(tournament, :url, url)}
+  end
+
+  defp get_url(floki_event, tournament) do
+    # if tournament.name == "Ororo PPA Indoor National Championships" do
+    #   require IEx; IEx.pry
+    # end
+
+    matching_fun = fn
+      [{_, [_, _, {_, _address_city_state}, _, _, {_, match}, _], [_, {_, [_, _], [_name]}, _, _, _]}] -> match
+      _ -> nil
+    end
+
+    do_get(floki_event, ".evo_info", matching_fun, tournament, :url)
+  end
+
+  defp get_start_date(floki_event, tournament) do
+    matching_fun = fn
+      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [start_day]}, _, _]}, {_, _, [{_, _, [_end_day]}, _]}, _]}] -> "#{year} #{month} #{start_day}"
+      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [start_day]}, _, _]}, {_, _, [{_, _, [_end_day]}]},_]}] -> "#{year} #{month} #{start_day}"
+      _ -> nil
+    end
+
+    do_get(floki_event, ".evcal_cblock", matching_fun, tournament, :start_date)
+  end
+
+  defp get_end_date(floki_event, tournament) do
+    matching_fun = fn
+      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [_start_day]}, _, _]}, {_, _, [{_, _, [end_day]}, _]}, _]}] -> "#{year} #{month} #{end_day}"
+      [{_, [_, _, {_, month}, {_, year}], [{_, _, [{_, _, [_start_day]}, _, _]}, {_, _, [{_, _, [end_day]}]},_]}] -> "#{year} #{month} #{end_day}"
+      _ -> nil
+    end
+
+    do_get(floki_event, ".evcal_cblock", matching_fun, tournament, :end_date)
+  end
+
+  defp get_address_city_and_state(floki_event, tournament) do
+    matching_fun = fn
+      [{_, [_, _, {_, match}, _, _, {_, _url}, _], [_, {_, [_, _], [_name]}, _, _, _]}] -> match
+      _ -> nil
+    end
+
+    case do_get(floki_event, ".evo_info", matching_fun, tournament, :address) do
+      {:ok, %{address: nil} = tournament} = no_address ->
+        Logger.info("Unable to get_address_city_and_state for #{inspect(tournament)}")
+        no_address
+
+      {:ok, %{address: address_city_state} = tournament} ->
+        address_city_state
+        |> String.split(", ")
+        |> Enum.map(fn e ->
+          e
+          |> String.trim_leading()
+          |> String.trim_trailing()
+        end)
+        |> handle_address_split(tournament)
+
+      error ->
+        Logger.info("Unable to get_address_city_and_state for #{inspect(tournament)}, error: #{error}")
+    end
+  end
+
+  defp handle_address_split([address, city, state], tournament) do
+    tournament
+    |> Map.put(:address, address)
+    |> Map.put(:city, city)
+    |> Map.put(:state, state)
+    |> then(fn tournament -> {:ok, tournament} end)
+  end
+
+  defp handle_address_split([address], tournament) do
+    tournament =
+      tournament
+      |> Map.put(:address, address)
+
+    {:ok, tournament}
+  end
+
+  defp get_prize_money(_floki_event, tournament) do
+    # Using the smallest amount of prize money for these tournaments
+    Map.put(tournament, :prize_money, 120)
+  end
+
+  defp do_get(floki_event, class, matching_fun, state, key_to_update) do
+    floki_event
+    |> Floki.find(class)
+    |> matching_fun.()
+    |> case do
+      nil ->
+        # Missing data seems to be common in those websites
+        Logger.info("Missing data -> Setting #{key_to_update} to nil for #{inspect(state)}")
+        {:ok, Map.put(state, key_to_update, nil)}
+
+      value_to_update ->
+        {:ok, Map.put(state, key_to_update, value_to_update)}
+    end
+  end
+
+  defp adjust_dates(%{start_date: improper_start_date, end_date: improper_end_date} = tournament) do
     months = %{
-      "JAN" => 1,
-      "FEB" => 2,
-      "MAR" => 3,
-      "APR" => 4,
-      "MAY" => 5,
-      "JUN" => 6,
-      "JUL" => 7,
-      "AUG" => 8,
-      "SEP" => 9,
-      "OCT" => 10,
-      "NOV" => 11,
-      "DEC" => 12
+      "January" => 1,
+      "February" => 2,
+      "March" => 3,
+      "April" => 4,
+      "May" => 5,
+      "June" => 6,
+      "July" => 7,
+      "August" => 8,
+      "September" => 9,
+      "October" => 10,
+      "November" => 11,
+      "December" => 12
     }
 
-    dates
-    |> String.replace(",", "")
-    |> String.replace("-", "")
-    |> String.replace("–", "")
-    |> String.split(" ", trim: true)
-    |> case do
-      _same_month = [start_month, start_day, end_day, year] ->
-        {:ok,
-         %{
-           start_date: adjust_date([year, start_month, start_day], months),
-           end_date: adjust_date([year, start_month, end_day], months)
-         }}
+    [start_date, end_date] =
+      Enum.map([improper_start_date, improper_end_date], fn improper_date ->
+        adjust_date(improper_date, months)
+      end)
 
-      _overlapping_month = [start_month, start_day, end_month, end_day, year] ->
-        {:ok,
-         %{
-           start_date: adjust_date([year, start_month, start_day], months),
-           end_date: adjust_date([year, end_month, end_day], months)
-         }}
-
-      _no_start_day_and_end_date = [start_month, year] ->
-        {:ok,
-         %{
-           start_date: adjust_date([year, start_month, "1"], months),
-           end_date: nil
-         }}
-
-      no_match ->
-        {:error, "Unable to parse dates, #{inspect(no_match)}"}
-    end
-    |> then(fn
-      {:ok, dates} -> {:ok, Map.merge(tournament, dates)}
-      error -> error
-    end)
+    tournament
+    |> Map.put(:start_date, start_date)
+    |> Map.put(:end_date, end_date)
   end
 
-  defp get_prize_money(_floki_event, %{prize_money: raw_prize_money} = tournament) do
-    raw_prize_money
-    |> String.replace("$", "")
-    |> String.replace("K", "")
-    |> then(fn
-      "TBA" ->
-        0
-
-      to_parse ->
-        case Integer.parse(to_parse) do
-          {i, _} -> i
-          error -> "Unable to parse #{to_parse}, error: #{inspect(error)}"
-        end
-    end)
-    |> then(fn
-      prize_money when is_integer(prize_money) ->
-        {:ok, Map.put(tournament, :prize_money, prize_money)}
-
-      error ->
-        {:error, "Unable to parse prize_money, error: #{error}"}
-    end)
+  defp adjust_date(nil, _) do
+    nil
   end
 
-  defp adjust_date([year_int, month_abbr, day_int], months) do
-    with month <- Map.get(months, month_abbr),
-         {day, _} <- Integer.parse(day_int),
-         {year, _} <- Integer.parse(year_int) do
+  defp adjust_date(improper_date, months) do
+    with [year, month_name, day] <- String.split(improper_date, " ", trim: true),
+         {year, _} <- Integer.parse(year),
+         month <- Map.get(months, String.capitalize(month_name)),
+         {day, _} <- Integer.parse(day)
+    do
       DateTime.new!(Date.new!(year, month, day), Time.utc_now())
     else
-      error ->
-        Logger.error("Error: #{inspect(error)}")
-        nil
+      _error -> nil
     end
   end
 end

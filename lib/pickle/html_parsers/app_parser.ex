@@ -7,8 +7,6 @@ defmodule Pickle.APPParser do
   Takes in html and parses it accordingly
   """
   def call(html) do
-    state = %{}
-
     html
     |> Floki.parse_document!()
     |> then(fn document ->
@@ -28,7 +26,6 @@ defmodule Pickle.APPParser do
       end)
       |> Enum.reject(fn e -> is_nil(e) end)
     end)
-    |> then(fn e -> Map.put(state, :tournaments, e) end)
   end
 
   def parse_tournament(e) do
@@ -44,12 +41,6 @@ defmodule Pickle.APPParser do
         Logger.error("Error: #{inspect(error)}")
         error
     end
-  end
-
-  def debug(tournament) do
-    require IEx
-    IEx.pry()
-    tournament
   end
 
   defp do_tournament_match(

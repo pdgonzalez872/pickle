@@ -3,13 +3,13 @@ defmodule PickleTest do
 
   describe "Scrapes the tournaments correctly" do
     test "works" do
-      state =
+      tournaments =
         [File.cwd!(), "scrappable_html", "usa_pickleball_schedule.html"]
         |> Path.join()
         |> File.read!()
         |> Pickle.UsaPickleballParser.call()
 
-      assert Enum.count(state.tournaments) == 117
+      assert Enum.count(tournaments) == 117
 
       assert %{
                address: "77333 Country Club Dr",
@@ -24,7 +24,7 @@ defmodule PickleTest do
                map_link:
                  "https://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=77333+Country+Club+Dr+Palm+Desert+CA+92211+United+States",
                organizer: "usa_pickleball"
-             } = Enum.at(state.tournaments, -1)
+             } = Enum.at(tournaments, -1)
 
       assert start_date.year == 2022
       assert start_date.month == 12
