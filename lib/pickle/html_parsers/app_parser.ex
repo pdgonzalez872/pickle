@@ -1,5 +1,11 @@
 defmodule Pickle.APPParser do
-  @moduledoc false
+  @moduledoc """
+  This was the most annoying one to parse. No css organization, had to deal
+  with pattern matching the whole structure.
+
+  Website url:
+  https://apptour.org/the-2022-app-tour-schedule
+  """
 
   require Logger
 

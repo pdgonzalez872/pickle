@@ -1,5 +1,11 @@
 defmodule Pickle.UsaPickleballParser do
-  @moduledoc false
+  @moduledoc """
+  This was the most straight forward website to parse, has great info and great
+  css organization.
+
+  Website url:
+  https://usapickleball.org/events/list/?tribe_paged=1&tribe_event_display=list&tribe-bar-date=2022-01-26
+  """
 
   require Logger
 

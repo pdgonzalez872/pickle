@@ -5,7 +5,10 @@ defmodule Pickle.PPAParser do
   which tournament type an event is. For now, will set the prize money as their
   smallest prize money amount: $120K. Prize money ranges from 120 - 160.
 
-  More info: https://www.ppatour.com/tour-payouts/
+  More info: https://www.ppatour.com/tour-payouts
+
+  Website url:
+  https://www.ppatour.com/ppa-tour
   """
 
   require Logger
