@@ -6,6 +6,7 @@ defmodule PickleTest do
       state =
         [File.cwd!(), "scrappable_html", "usa_pickleball_schedule.html"]
         |> Path.join()
+        |> File.read!()
         |> Pickle.UsaPickleballParser.call()
 
       assert Enum.count(state.tournaments) == 117

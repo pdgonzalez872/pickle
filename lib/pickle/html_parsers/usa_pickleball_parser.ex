@@ -5,11 +5,13 @@ defmodule Pickle.UsaPickleballParser do
 
   @tournament_year 2022
 
-  def call(full_file_path) do
+  @doc """
+  Takes in html and parses it accordingly
+  """
+  def call(html) do
     state = %{}
 
-    full_file_path
-    |> File.read!()
+    html
     |> Floki.parse_document!()
     |> then(fn document ->
       document

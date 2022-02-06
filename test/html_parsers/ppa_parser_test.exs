@@ -1,10 +1,10 @@
-defmodule Pickle.APPParserTest do
+defmodule Pickle.PPAParserTest do
   use ExUnit.Case
 
   describe "Scrapes the tournaments correctly - APP" do
     test "works" do
       state =
-        [File.cwd!(), "scrappable_html", "app_schedule.html"]
+        [File.cwd!(), "scrappable_html", "ppa_schedule.html"]
         |> Path.join()
         |> File.read!()
         |> Pickle.APPParser.call()

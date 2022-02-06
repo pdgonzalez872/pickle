@@ -1,4 +1,4 @@
-defmodule Pickle.APPParser do
+defmodule Pickle.PPAParser do
   @moduledoc false
 
   require Logger
