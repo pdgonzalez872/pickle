@@ -83,10 +83,6 @@ defmodule Pickle.PPAParser do
   end
 
   defp get_url(floki_event, tournament) do
-    # if tournament.name == "Ororo PPA Indoor National Championships" do
-    #   require IEx; IEx.pry
-    # end
-
     matching_fun = fn
       [
         {_, [_, _, {_, _address_city_state}, _, _, {_, match}, _],
