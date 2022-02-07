@@ -3,8 +3,8 @@ defmodule Pickle.EventsTest do
 
   alias Pickle.Events
 
-  describe "tournaments" do
-    alias Pickle.Events.Tournaments
+  describe "tournament" do
+    alias Pickle.Events.Tournament
 
     import Pickle.EventsFixtures
 
@@ -23,20 +23,20 @@ defmodule Pickle.EventsTest do
     }
 
     test "list_tournaments/0 returns all tournaments" do
-      tournaments = tournaments_fixture()
-      assert Events.list_tournaments() == [tournaments]
+      tournament = tournaments_fixture()
+      assert Events.list_tournaments() == [tournament]
     end
 
-    test "get_tournaments!/1 returns the tournaments with given id" do
-      tournaments = tournaments_fixture()
-      assert Events.get_tournaments!(tournaments.id) == tournaments
+    test "get_tournament!/1 returns the tournament with given id" do
+      tournament = tournaments_fixture()
+      assert Events.get_tournament!(tournament.id) == tournament
     end
 
-    test "create_tournaments/1 with valid data creates a tournaments" do
+    test "create_tournament/1 with valid data creates a tournament" do
       valid_attrs = %{
         address: "some address",
         city: "some city",
-        end_date: ~N[2022-01-30 04:21:00],
+        end_date: ~U[2022-01-30 04:21:00Z],
         map_link: "some map_link",
         name: "some name",
         organizer: "some organizer",
@@ -47,72 +47,72 @@ defmodule Pickle.EventsTest do
         zip: "some zip"
       }
 
-      assert {:ok, %Tournaments{} = tournaments} = Events.create_tournaments(valid_attrs)
-      assert tournaments.address == "some address"
-      assert tournaments.city == "some city"
-      assert tournaments.end_date == ~N[2022-01-30 04:21:00]
-      assert tournaments.map_link == "some map_link"
-      assert tournaments.name == "some name"
-      assert tournaments.organizer == "some organizer"
-      assert tournaments.prize_money == 42
-      assert tournaments.start_date == ~N[2022-01-30 04:21:00]
-      assert tournaments.state == "some state"
-      assert tournaments.url == "some url"
-      assert tournaments.zip == "some zip"
+      assert {:ok, %Tournament{} = tournament} = Events.create_tournament(valid_attrs)
+      assert tournament.address == "some address"
+      assert tournament.city == "some city"
+      assert tournament.end_date == ~U[2022-01-30 04:21:00Z]
+      assert tournament.map_link == "some map_link"
+      assert tournament.name == "some name"
+      assert tournament.organizer == "some organizer"
+      assert tournament.prize_money == 42
+      assert tournament.start_date == ~U[2022-01-30 04:21:00Z]
+      assert tournament.state == "some state"
+      assert tournament.url == "some url"
+      assert tournament.zip == "some zip"
     end
 
-    test "create_tournaments/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Events.create_tournaments(@invalid_attrs)
+    test "create_tournament/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Events.create_tournament(@invalid_attrs)
     end
 
-    test "update_tournaments/2 with valid data updates the tournaments" do
-      tournaments = tournaments_fixture()
+    test "update_tournament/2 with valid data updates the tournament" do
+      tournament = tournaments_fixture()
 
       update_attrs = %{
         address: "some updated address",
         city: "some updated city",
-        end_date: ~N[2022-01-31 04:21:00],
+        end_date: ~U[2022-01-31 04:21:00Z],
         map_link: "some updated map_link",
         name: "some updated name",
         organizer: "some updated organizer",
         prize_money: 43,
-        start_date: ~N[2022-01-31 04:21:00],
+        start_date: ~U[2022-01-31 04:21:00Z],
         state: "some updated state",
         url: "some updated url",
         zip: "some updated zip"
       }
 
-      assert {:ok, %Tournaments{} = tournaments} =
-               Events.update_tournaments(tournaments, update_attrs)
+      assert {:ok, %Tournament{} = tournament} =
+               Events.update_tournament(tournament, update_attrs)
 
-      assert tournaments.address == "some updated address"
-      assert tournaments.city == "some updated city"
-      assert tournaments.end_date == ~N[2022-01-31 04:21:00]
-      assert tournaments.map_link == "some updated map_link"
-      assert tournaments.name == "some updated name"
-      assert tournaments.organizer == "some updated organizer"
-      assert tournaments.prize_money == 43
-      assert tournaments.start_date == ~N[2022-01-31 04:21:00]
-      assert tournaments.state == "some updated state"
-      assert tournaments.url == "some updated url"
-      assert tournaments.zip == "some updated zip"
+      assert tournament.address == "some updated address"
+      assert tournament.city == "some updated city"
+      assert tournament.end_date == ~U[2022-01-31 04:21:00Z]
+      assert tournament.map_link == "some updated map_link"
+      assert tournament.name == "some updated name"
+      assert tournament.organizer == "some updated organizer"
+      assert tournament.prize_money == 43
+      assert tournament.start_date == ~U[2022-01-31 04:21:00Z]
+      assert tournament.state == "some updated state"
+      assert tournament.url == "some updated url"
+      assert tournament.zip == "some updated zip"
     end
 
-    test "update_tournaments/2 with invalid data returns error changeset" do
-      tournaments = tournaments_fixture()
-      assert {:error, %Ecto.Changeset{}} = Events.update_tournaments(tournaments, @invalid_attrs)
-      assert tournaments == Events.get_tournaments!(tournaments.id)
+    test "update_tournament/2 with invalid data returns error changeset" do
+      tournament = tournaments_fixture()
+      assert {:error, %Ecto.Changeset{}} = Events.update_tournament(tournament, @invalid_attrs)
+      assert tournament == Events.get_tournament!(tournament.id)
     end
 
-    test "delete_tournaments/1 deletes the tournaments" do
-      tournaments = tournaments_fixture()
-      assert {:ok, %Tournaments{}} = Events.delete_tournaments(tournaments)
-      assert_raise Ecto.NoResultsError, fn -> Events.get_tournaments!(tournaments.id) end
+    test "delete_tournaments/1 deletes the tournament" do
+      tournament = tournaments_fixture()
+      assert {:ok, %Tournament{}} = Events.delete_tournaments(tournament)
+      assert_raise Ecto.NoResultsError, fn -> Events.get_tournament!(tournament.id) end
     end
 
-    test "change_tournaments/1 returns a tournaments changeset" do
-      tournaments = tournaments_fixture()
-      assert %Ecto.Changeset{} = Events.change_tournaments(tournaments)
+    test "change_tournaments/1 returns a tournament changeset" do
+      tournament = tournaments_fixture()
+      assert %Ecto.Changeset{} = Events.change_tournaments(tournament)
     end
   end
 end

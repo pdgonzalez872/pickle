@@ -6,7 +6,7 @@ defmodule Pickle.Events do
   import Ecto.Query, warn: false
   alias Pickle.Repo
 
-  alias Pickle.Events.Tournaments
+  alias Pickle.Events.Tournament
 
   @doc """
   Returns the list of tournaments.
@@ -14,91 +14,91 @@ defmodule Pickle.Events do
   ## Examples
 
       iex> list_tournaments()
-      [%Tournaments{}, ...]
+      [%Tournament{}, ...]
 
   """
   def list_tournaments do
-    Repo.all(Tournaments)
+    Repo.all(Tournament)
   end
 
   @doc """
-  Gets a single tournaments.
+  Gets a single tournament.
 
-  Raises `Ecto.NoResultsError` if the Tournaments does not exist.
+  Raises `Ecto.NoResultsError` if the Tournament does not exist.
 
   ## Examples
 
-      iex> get_tournaments!(123)
-      %Tournaments{}
+      iex> get_tournament!(123)
+      %Tournament{}
 
-      iex> get_tournaments!(456)
+      iex> get_tournament!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_tournaments!(id), do: Repo.get!(Tournaments, id)
+  def get_tournament!(id), do: Repo.get!(Tournament, id)
 
   @doc """
-  Creates a tournaments.
+  Creates a tournament.
 
   ## Examples
 
-      iex> create_tournaments(%{field: value})
-      {:ok, %Tournaments{}}
+      iex> create_tournament(%{field: value})
+      {:ok, %Tournament{}}
 
-      iex> create_tournaments(%{field: bad_value})
+      iex> create_tournament(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_tournaments(attrs \\ %{}) do
-    %Tournaments{}
-    |> Tournaments.changeset(attrs)
+  def create_tournament(attrs \\ %{}) do
+    %Tournament{}
+    |> Tournament.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a tournaments.
+  Updates a tournament.
 
   ## Examples
 
-      iex> update_tournaments(tournaments, %{field: new_value})
-      {:ok, %Tournaments{}}
+      iex> update_tournament(tournament, %{field: new_value})
+      {:ok, %Tournament{}}
 
-      iex> update_tournaments(tournaments, %{field: bad_value})
+      iex> update_tournament(tournament, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_tournaments(%Tournaments{} = tournaments, attrs) do
-    tournaments
-    |> Tournaments.changeset(attrs)
+  def update_tournament(%Tournament{} = tournament, attrs) do
+    tournament
+    |> Tournament.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a tournaments.
+  Deletes a tournament.
 
   ## Examples
 
-      iex> delete_tournaments(tournaments)
-      {:ok, %Tournaments{}}
+      iex> delete_tournaments(tournament)
+      {:ok, %Tournament{}}
 
-      iex> delete_tournaments(tournaments)
+      iex> delete_tournaments(tournament)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_tournaments(%Tournaments{} = tournaments) do
-    Repo.delete(tournaments)
+  def delete_tournaments(%Tournament{} = tournament) do
+    Repo.delete(tournament)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking tournaments changes.
+  Returns an `%Ecto.Changeset{}` for tracking tournament changes.
 
   ## Examples
 
-      iex> change_tournaments(tournaments)
-      %Ecto.Changeset{data: %Tournaments{}}
+      iex> change_tournaments(tournament)
+      %Ecto.Changeset{data: %Tournament{}}
 
   """
-  def change_tournaments(%Tournaments{} = tournaments, attrs \\ %{}) do
-    Tournaments.changeset(tournaments, attrs)
+  def change_tournaments(%Tournament{} = tournament, attrs \\ %{}) do
+    Tournament.changeset(tournament, attrs)
   end
 end

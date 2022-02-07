@@ -244,7 +244,9 @@ defmodule Pickle.PPAParser do
          {year, _} <- Integer.parse(year),
          month <- Map.get(months, String.capitalize(month_name)),
          {day, _} <- Integer.parse(day) do
-      DateTime.new!(Date.new!(year, month, day), Time.utc_now())
+      Date.new!(year, month, day)
+      |> DateTime.new!(Time.utc_now())
+      |> DateTime.truncate(:second)
     else
       _error -> nil
     end

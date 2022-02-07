@@ -20,7 +20,7 @@ defmodule Pickle.MixProject do
   def application do
     [
       mod: {Pickle.Application, []},
-      extra_applications: [:logger, :httpoison, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -49,7 +49,7 @@ defmodule Pickle.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:mox, "~> 1.0", only: :test},
-      {:httpoison, "~> 1.8"},
+      {:req, "~> 0.2.0"},
       {:plug_cowboy, "~> 2.5"}
     ]
   end

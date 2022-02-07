@@ -195,6 +195,9 @@ defmodule Pickle.UsaPickleballParser do
 
     month = Map.get(months, month_name)
     {day, _} = Integer.parse(day)
-    DateTime.new!(Date.new!(@tournament_year, month, day), Time.utc_now())
+
+    Date.new!(@tournament_year, month, day)
+    |> DateTime.new!(Time.utc_now())
+    |> DateTime.truncate(:second)
   end
 end

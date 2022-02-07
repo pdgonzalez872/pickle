@@ -1,4 +1,4 @@
-defmodule Pickle.Events.Tournaments do
+defmodule Pickle.Events.Tournament do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,12 +7,12 @@ defmodule Pickle.Events.Tournaments do
   schema "tournaments" do
     field :address, :string
     field :city, :string
-    field :end_date, :naive_datetime
+    field :end_date, :utc_datetime
     field :map_link, :string
     field :name, :string
     field :organizer, :string
     field :prize_money, :integer
-    field :start_date, :naive_datetime
+    field :start_date, :utc_datetime
     field :state, :string
     field :url, :string
     field :zip, :string

@@ -6,10 +6,10 @@ defmodule Pickle.Repo.Migrations.CreateTournaments do
       add :id, :binary_id, primary_key: true
       add :address, :string
       add :city, :string
-      add :end_date, :naive_datetime
+      add :end_date, :utc_datetime
       add :name, :string
       add :prize_money, :integer
-      add :start_date, :naive_datetime
+      add :start_date, :utc_datetime
       add :state, :string
       add :url, :string
       add :zip, :string

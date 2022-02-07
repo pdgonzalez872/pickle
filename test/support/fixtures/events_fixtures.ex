@@ -8,7 +8,7 @@ defmodule Pickle.EventsFixtures do
   Generate a tournaments.
   """
   def tournaments_fixture(attrs \\ %{}) do
-    {:ok, tournaments} =
+    {:ok, tournament} =
       attrs
       |> Enum.into(%{
         address: "some address",
@@ -23,8 +23,8 @@ defmodule Pickle.EventsFixtures do
         url: "some url",
         zip: "some zip"
       })
-      |> Pickle.Events.create_tournaments()
+      |> Pickle.Events.create_tournament()
 
-    tournaments
+    tournament
   end
 end

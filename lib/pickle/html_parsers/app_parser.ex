@@ -243,7 +243,9 @@ defmodule Pickle.APPParser do
     with month <- Map.get(months, month_abbr),
          {day, _} <- Integer.parse(day_int),
          {year, _} <- Integer.parse(year_int) do
-      DateTime.new!(Date.new!(year, month, day), Time.utc_now())
+      Date.new!(year, month, day)
+      |> DateTime.new!(Time.utc_now())
+      |> DateTime.truncate(:second)
     else
       error ->
         Logger.error("Error: #{inspect(error)}")
