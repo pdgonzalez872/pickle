@@ -40,3 +40,8 @@ pickle_dev=# select name, start_date, state, prize_money from tournaments where 
  Delray Beach Pickleball Open            | 2022-03-15 | FL    |          60
 (10 rows)
 ```
+
+Or, if you don't want to run the app and just want to play with the data, you can set a local postgres instance as follows:
+- make sure you have postgres on your local machine, won't go into detail how here.
+- `psql -U postgres -h localhost -c 'create database pickle_dev;'`
+- `psql -d pickle_dev -U postgres -h localhost -f pickle_tournaments.sql`
