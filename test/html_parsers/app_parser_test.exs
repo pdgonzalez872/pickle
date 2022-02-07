@@ -13,7 +13,6 @@ defmodule Pickle.APPParserTest do
 
       assert %{
                city: "Mesa",
-               dates: "JAN 13 - 16, 2022",
                end_date: end_date,
                name: "Mesa Open",
                organizer: "app",
@@ -32,12 +31,10 @@ defmodule Pickle.APPParserTest do
 
       assert %{
                city: "Unknown",
-               dates: "JAN 2023",
                name: "APP Masters",
                organizer: "app",
                prize_money: 75,
                state: "FL",
-               end_date: nil,
                start_date: start_date
              } = Enum.at(tournaments, -1)
 

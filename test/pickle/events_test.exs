@@ -110,9 +110,9 @@ defmodule Pickle.EventsTest do
       assert_raise Ecto.NoResultsError, fn -> Events.get_tournament!(tournament.id) end
     end
 
-    test "change_tournaments/1 returns a tournament changeset" do
+    test "change_tournament/1 returns a tournament changeset" do
       tournament = tournaments_fixture()
-      assert %Ecto.Changeset{} = Events.change_tournaments(tournament)
+      assert %Ecto.Changeset{} = Events.change_tournament(tournament)
     end
   end
 end

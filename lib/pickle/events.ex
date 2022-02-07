@@ -94,11 +94,11 @@ defmodule Pickle.Events do
 
   ## Examples
 
-      iex> change_tournaments(tournament)
+      iex> change_tournament(tournament)
       %Ecto.Changeset{data: %Tournament{}}
 
   """
-  def change_tournaments(%Tournament{} = tournament, attrs \\ %{}) do
+  def change_tournament(%Tournament{} = tournament, attrs \\ %{}) do
     Tournament.changeset(tournament, attrs)
   end
 end
