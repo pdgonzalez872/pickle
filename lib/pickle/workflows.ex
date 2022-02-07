@@ -7,7 +7,8 @@ defmodule Pickle.Workflows do
     [
       {"https://apptour.org/the-2022-app-tour-schedule", Pickle.APPParser},
       {"https://www.ppatour.com/ppa-tour", Pickle.PPAParser},
-      {"https://usapickleball.org/events/list/?tribe_paged=1&tribe_event_display=list&tribe-bar-date=2022-01-26", Pickle.UsaPickleballParser}
+      {"https://usapickleball.org/events/list/?tribe_paged=1&tribe_event_display=list&tribe-bar-date=2022-01-26",
+       Pickle.UsaPickleballParser}
     ]
     |> Enum.each(fn {url, parser} ->
       Task.start(scrape_tournaments(url, parser))
@@ -17,8 +18,7 @@ defmodule Pickle.Workflows do
   def scrape_tournaments(url, parser_mod) do
     with {:ok, html} <- tournament_scraper_impl().get_tournaments(url),
          tournaments <- parser_mod.call(html),
-         _result <- persist_tournaments(tournaments)
-    do
+         _result <- persist_tournaments(tournaments) do
       Logger.info("Successfully processed #{url}")
       {:ok, %{tournaments: tournaments, html: html}}
     else
@@ -29,13 +29,16 @@ defmodule Pickle.Workflows do
   end
 
   def persist_tournaments(tournaments_params) do
-    tournaments_params_with_timestamps = Enum.map(tournaments_params, fn t ->
-      t
-      |> Map.put(:inserted_at, NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second))
-      |> Map.put(:updated_at, NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second))
-    end)
+    tournaments_params_with_timestamps =
+      Enum.map(tournaments_params, fn t ->
+        t
+        |> Map.put(:inserted_at, NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second))
+        |> Map.put(:updated_at, NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second))
+      end)
 
-    Pickle.Repo.insert_all(Pickle.Events.Tournament, tournaments_params_with_timestamps, returning: true)
+    Pickle.Repo.insert_all(Pickle.Events.Tournament, tournaments_params_with_timestamps,
+      returning: true
+    )
   end
 
   defp tournament_scraper_impl() do

@@ -37,7 +37,8 @@ defmodule Pickle.APPParser do
          {:ok, tournament} <- get_prize_money(e, tournament),
          tournament <- Map.delete(tournament, :address_state),
          tournament <- Map.put(tournament, :organizer, "app"),
-         %{changes: changes, valid?: true} <- Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament) do
+         %{changes: changes, valid?: true} <-
+           Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament) do
       changes
     else
       error ->

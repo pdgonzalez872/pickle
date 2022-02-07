@@ -10,10 +10,10 @@ defmodule Pickle.TournamentScraperStaticImpl do
   @impl Pickle.TournamentScraperBehaviour
   def get_tournaments(url) do
     # TODO: delete me :)
-    with headers <- ["Accept": "Application/json; Charset=utf-8"],
+    with headers <- [Accept: "Application/json; Charset=utf-8"],
          options <- [recv_timeout: 10000],
-         {:ok, %HTTPoison.Response{status_code: 200, body: body}} = HTTPoison.get(url, headers, options)
-    do
+         {:ok, %HTTPoison.Response{status_code: 200, body: body}} =
+           HTTPoison.get(url, headers, options) do
       {:ok, body}
     else
       error ->

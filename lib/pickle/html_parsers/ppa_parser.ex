@@ -39,7 +39,8 @@ defmodule Pickle.PPAParser do
          {:ok, tournament} <- get_address_city_and_state(e, tournament),
          tournament <- get_prize_money(e, tournament),
          tournament <- Map.put(tournament, :organizer, "ppa"),
-         %{changes: changes, valid?: true} <- Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament) do
+         %{changes: changes, valid?: true} <-
+           Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament) do
       changes
     else
       error ->
