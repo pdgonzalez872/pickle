@@ -36,8 +36,10 @@ defmodule Pickle.UsaPickleballParser do
          {:ok, tournament} <- get_zip(e, tournament),
          {:ok, tournament} <- get_map_link(e, tournament),
          tournament <- get_prize_money(e, tournament),
-         tournament <- Map.put(tournament, :organizer, "usa_pickleball") do
-      tournament
+         tournament <- Map.put(tournament, :organizer, "usa_pickleball"),
+         %{changes: changes, valid?: true} <- Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament)
+    do
+      changes
     else
       error ->
         Logger.error("Error: #{inspect(error)}")

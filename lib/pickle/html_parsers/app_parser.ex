@@ -22,15 +22,11 @@ defmodule Pickle.APPParser do
         [{_, _, [_, {_, _, web}]}, _mobile] = i
         web
       end)
-      |> Enum.map(fn e ->
-        e
-        |> parse_tournament()
-        |> case do
-          {:ok, tournament} -> tournament
-          _ -> nil
-        end
+      |> Enum.map(fn e -> parse_tournament(e) end)
+      |> Enum.reject(fn
+        {:error, _} -> true
+        _ -> false
       end)
-      |> Enum.reject(fn e -> is_nil(e) end)
     end)
   end
 
@@ -42,7 +38,7 @@ defmodule Pickle.APPParser do
          tournament <- Map.delete(tournament, :address_state),
          tournament <- Map.put(tournament, :organizer, "app"),
          %{changes: changes, valid?: true} <- Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament) do
-      {:ok, changes}
+      changes
     else
       error ->
         Logger.error("Error: #{inspect(error)}")

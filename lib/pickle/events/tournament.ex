@@ -21,20 +21,20 @@ defmodule Pickle.Events.Tournament do
   end
 
   @required [
-    :city,
     :name,
     :prize_money,
     :start_date,
-    :state,
     :organizer
   ]
 
   @optional [
     :address,
+    :city,
     :end_date,
+    :map_link,
+    :state,
     :url,
-    :zip,
-    :map_link
+    :zip
   ]
 
   @all @required ++ @optional

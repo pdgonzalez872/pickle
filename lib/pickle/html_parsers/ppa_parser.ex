@@ -22,15 +22,11 @@ defmodule Pickle.PPAParser do
     |> then(fn document ->
       document
       |> Floki.find(".evcal_list_a")
-      |> Enum.map(fn e ->
-        e
-        |> parse_tournament()
-        |> case do
-          {:ok, tournament} -> tournament
-          _ -> nil
-        end
+      |> Enum.map(fn e -> parse_tournament(e) end)
+      |> Enum.reject(fn
+        {:error, _} -> true
+        _ -> false
       end)
-      |> Enum.reject(fn e -> is_nil(e) end)
     end)
   end
 
@@ -42,8 +38,9 @@ defmodule Pickle.PPAParser do
          tournament <- adjust_dates(tournament),
          {:ok, tournament} <- get_address_city_and_state(e, tournament),
          tournament <- get_prize_money(e, tournament),
-         tournament <- Map.put(tournament, :organizer, "ppa") do
-      {:ok, tournament}
+         tournament <- Map.put(tournament, :organizer, "ppa"),
+         %{changes: changes, valid?: true} <- Pickle.Events.change_tournament(%Pickle.Events.Tournament{}, tournament) do
+      changes
     else
       error ->
         Logger.error("Error: #{inspect(error)}")

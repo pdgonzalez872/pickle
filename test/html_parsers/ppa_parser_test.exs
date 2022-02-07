@@ -37,9 +37,7 @@ defmodule Pickle.PPAParserTest do
                name: "The Hyundai Masters (Grand Slam)",
                organizer: "ppa",
                prize_money: 120,
-               start_date: start_date,
-               address: nil,
-               url: nil
+               start_date: start_date
              } = Enum.at(tournaments, -1)
 
       assert start_date.year == 2022
