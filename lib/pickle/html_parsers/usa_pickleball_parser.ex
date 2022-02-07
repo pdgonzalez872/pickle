@@ -199,7 +199,5 @@ defmodule Pickle.UsaPickleballParser do
     {day, _} = Integer.parse(day)
 
     Date.new!(@tournament_year, month, day)
-    |> DateTime.new!(Time.utc_now())
-    |> DateTime.truncate(:second)
   end
 end

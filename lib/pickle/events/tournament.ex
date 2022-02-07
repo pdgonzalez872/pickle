@@ -7,12 +7,12 @@ defmodule Pickle.Events.Tournament do
   schema "tournaments" do
     field :address, :string
     field :city, :string
-    field :end_date, :utc_datetime
+    field :end_date, :date
     field :map_link, :string
     field :name, :string
     field :organizer, :string
     field :prize_money, :integer
-    field :start_date, :utc_datetime
+    field :start_date, :date
     field :state, :string
     field :url, :string
     field :zip, :string

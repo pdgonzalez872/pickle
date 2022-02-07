@@ -36,12 +36,12 @@ defmodule Pickle.EventsTest do
       valid_attrs = %{
         address: "some address",
         city: "some city",
-        end_date: ~U[2022-01-30 04:21:00Z],
+        end_date: ~D[2022-01-30],
         map_link: "some map_link",
         name: "some name",
         organizer: "some organizer",
         prize_money: 42,
-        start_date: ~N[2022-01-30 04:21:00],
+        start_date: ~D[2022-01-30],
         state: "some state",
         url: "some url",
         zip: "some zip"
@@ -50,12 +50,12 @@ defmodule Pickle.EventsTest do
       assert {:ok, %Tournament{} = tournament} = Events.create_tournament(valid_attrs)
       assert tournament.address == "some address"
       assert tournament.city == "some city"
-      assert tournament.end_date == ~U[2022-01-30 04:21:00Z]
+      assert tournament.end_date == ~D[2022-01-30]
       assert tournament.map_link == "some map_link"
       assert tournament.name == "some name"
       assert tournament.organizer == "some organizer"
       assert tournament.prize_money == 42
-      assert tournament.start_date == ~U[2022-01-30 04:21:00Z]
+      assert tournament.start_date == ~D[2022-01-30]
       assert tournament.state == "some state"
       assert tournament.url == "some url"
       assert tournament.zip == "some zip"
@@ -71,12 +71,12 @@ defmodule Pickle.EventsTest do
       update_attrs = %{
         address: "some updated address",
         city: "some updated city",
-        end_date: ~U[2022-01-31 04:21:00Z],
+        end_date: ~D[2022-01-31],
         map_link: "some updated map_link",
         name: "some updated name",
         organizer: "some updated organizer",
         prize_money: 43,
-        start_date: ~U[2022-01-31 04:21:00Z],
+        start_date: ~D[2022-01-31],
         state: "some updated state",
         url: "some updated url",
         zip: "some updated zip"
@@ -87,12 +87,12 @@ defmodule Pickle.EventsTest do
 
       assert tournament.address == "some updated address"
       assert tournament.city == "some updated city"
-      assert tournament.end_date == ~U[2022-01-31 04:21:00Z]
+      assert tournament.end_date == ~D[2022-01-31]
       assert tournament.map_link == "some updated map_link"
       assert tournament.name == "some updated name"
       assert tournament.organizer == "some updated organizer"
       assert tournament.prize_money == 43
-      assert tournament.start_date == ~U[2022-01-31 04:21:00Z]
+      assert tournament.start_date == ~D[2022-01-31]
       assert tournament.state == "some updated state"
       assert tournament.url == "some updated url"
       assert tournament.zip == "some updated zip"
