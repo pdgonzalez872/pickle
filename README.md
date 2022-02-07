@@ -10,6 +10,33 @@ These are the 3 websites I found that are interesting to parse, there may be mor
 
 ## Usage
 
+Boot up an iex session:
+
+```
+iex -S mix
+```
+
+And fetch some tournaments:
+
 ```elixir
-Pickle.Workflows.parse_tournament_website(url)
+Pickle.Workflows.scrape_all_tournaments()
+```
+
+You can then look at the different tournaments:
+
+```
+pickle_dev=# select name, start_date, state, prize_money from tournaments where prize_money > 0 order by start_date asc limit 10;
+                  name                   | start_date | state | prize_money 
+-----------------------------------------+------------+-------+-------------
+ Mesa Open                               | 2022-01-13 | AZ    |          75
+ APP Masters                             | 2022-01-18 | FL    |          75
+ APP $15k Next Gen – Oklahoma City       | 2022-02-04 | OK    |          15
+ Foot Solutions Arizona Grand Slam       | 2022-02-16 |       |         120
+ Punta Gorda                             | 2022-02-23 | FL    |          40
+ Ororo PPA Indoor National Championships | 2022-02-24 |       |         120
+ Plantation Open                         | 2022-03-02 | FL    |          40
+ APP $40k Plantation Open                | 2022-03-02 | FL    |          40
+ PPA Riverland Open                      | 2022-03-10 |       |         120
+ Delray Beach Pickleball Open            | 2022-03-15 | FL    |          60
+(10 rows)
 ```
