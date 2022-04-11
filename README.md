@@ -45,3 +45,8 @@ Or, if you don't want to run the app and just want to play with the data, you ca
 - make sure you have postgres on your local machine, won't go into detail how here.
 - `psql -U postgres -h localhost -c 'create database pickle_dev;'`
 - `psql -d pickle_dev -U postgres -h localhost -f pickle_tournaments.sql`
+
+If you don't want to do any of that and just want a csv of the data, check `tournaments.csv`.
+
+Here is a link to a viewable sheet:
+https://docs.google.com/spreadsheets/d/1sRqymNxp-wVNQV_DxP0thV3vOgtpMU5rXEeBaxx4V8Q/edit?usp=sharing
